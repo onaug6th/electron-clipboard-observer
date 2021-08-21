@@ -1,15 +1,21 @@
-const { clipboard } = require('electron');
+import { clipboard, NativeImage } from 'electron';
+
+interface Options {
+  duration?: number;
+  textChange?: (value: string) => void;
+  imageChange?: (value: NativeImage) => void;
+}
 
 class ClipboardObserver {
-  timer;
-  beforeText;
-  beforeImage;
+  timer: NodeJS.Timeout;
+  beforeText: string;
+  beforeImage: NativeImage;
 
   duration = 500;
-  textChange;
-  imageChange;
+  textChange: (text: string, brforeText: string) => void;
+  imageChange: (image: NativeImage, beforeImage: NativeImage) => void;
 
-  constructor(options) {
+  constructor(options: Options) {
     const { duration, textChange, imageChange } = options;
 
     this.duration = duration;
@@ -24,7 +30,7 @@ class ClipboardObserver {
   /**
    * 设置定时器
    */
-  setTimer() {
+  setTimer(): void {
     this.timer = setInterval(() => {
       if (this.textChange) {
         const text = clipboard.readText();
@@ -47,14 +53,14 @@ class ClipboardObserver {
   /**
    * 清除定时器
    */
-  clearTimer() {
+  clearTimer(): void {
     clearInterval(this.timer);
   }
 
   /**
    * 设置剪贴板默认内容
    */
-  setClipboardDefaultValue() {
+  setClipboardDefaultValue(): void {
     if (this.textChange) {
       this.beforeText = clipboard.readText();
     }
@@ -69,7 +75,7 @@ class ClipboardObserver {
    * @param afterText
    * @returns
    */
-  isDiffText(beforeText, afterText) {
+  isDiffText(beforeText: string, afterText: string): boolean {
     return afterText && beforeText !== afterText;
   }
 
@@ -79,14 +85,14 @@ class ClipboardObserver {
    * @param afterImage
    * @returns
    */
-  isDiffImage(beforeImage, afterImage) {
+  isDiffImage(beforeImage: NativeImage, afterImage: NativeImage): boolean {
     return afterImage && !afterImage.isEmpty() && beforeImage.toDataURL() !== afterImage.toDataURL();
   }
 
   /**
    * 开始
    */
-  start() {
+  start(): void {
     this.setClipboardDefaultValue();
     this.setTimer();
   }
@@ -94,7 +100,7 @@ class ClipboardObserver {
   /**
    * 暂停
    */
-  stop() {
+  stop(): void {
     this.clearTimer();
   }
 }
