@@ -2,8 +2,8 @@ import { clipboard, NativeImage } from 'electron';
 
 interface Options {
   duration?: number;
-  textChange?: (value: string) => void;
-  imageChange?: (value: NativeImage) => void;
+  textChange?: (text: string, beforeText: string) => void;
+  imageChange?: (image: NativeImage, beforeImage: NativeImage) => void;
 }
 
 class ClipboardObserver {
@@ -12,7 +12,7 @@ class ClipboardObserver {
   beforeImage: NativeImage;
 
   duration = 500;
-  textChange: (text: string, brforeText: string) => void;
+  textChange: (text: string, beforeText: string) => void;
   imageChange: (image: NativeImage, beforeImage: NativeImage) => void;
 
   constructor(options: Options) {
